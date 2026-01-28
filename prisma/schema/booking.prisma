@@ -1,0 +1,14 @@
+model Booking {
+  id             String        @id @default(uuid())
+  studentId      String //* better-auth
+  tutorProfileId String
+  availabilityId String        @unique
+  status         BookingStatus @default(CONFIRMED)
+
+  tutorProfile TutorProfile @relation(fields: [tutorProfileId], references: [id])
+  availability Availability @relation(fields: [availabilityId], references: [id])
+  review       Review?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

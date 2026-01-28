@@ -1,0 +1,17 @@
+model Category {
+    id              String          @id @default(uuid())
+    name            String          @db.VarChar(225)
+    isActive        Boolean         @default(true)
+    createdAt       DateTime        @default(now())
+    updatedAt       DateTime        @updatedAt
+    tutorCategories TutorCategory[]
+}
+
+model TutorCategory {
+    id             String @id @default(uuid())
+    tutorProfileId String
+    categoryId     String
+
+    tutorProfile TutorProfile @relation(fields: [tutorProfileId], references: [id])
+    category     Category     @relation(fields: [categoryId], references: [id])
+}
