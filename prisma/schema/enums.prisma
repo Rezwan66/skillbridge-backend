@@ -9,3 +9,8 @@ enum BookingStatus {
     CANCELLED
     COMPLETED
 }
+
+enum UserStatus {
+    ACTIVE
+    BANNED
+}
