@@ -23,7 +23,7 @@ const requireAuth = (...roles: Role[]) => {
       const session = await auth.api.getSession({
         headers: fromNodeHeaders(req.headers),
       });
-      console.log('from requireAuth-->', session);
+      //   console.log('from requireAuth-->', session);
 
       if (!session) {
         return res.status(401).json({

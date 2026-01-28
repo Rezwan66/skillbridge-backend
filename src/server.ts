@@ -2,6 +2,7 @@ import app from './app';
 import { prisma } from './lib/prisma';
 
 const port = process.env.PORT || 5000;
+const backendUrl = process.env.BACKEND_URL;
 
 async function main() {
   try {
@@ -9,7 +10,7 @@ async function main() {
     console.log('Connected to the database successfully.');
 
     app.listen(port, () => {
-      console.log(`Server is running on http://localhost:${port}`);
+      console.log(`Server is running on ${backendUrl}`);
     });
   } catch (error) {
     console.error('An error occurred:', error);
