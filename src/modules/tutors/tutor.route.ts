@@ -5,6 +5,11 @@ import { Role } from '../../../generated/prisma/enums';
 
 const router = express.Router();
 
+//* Get Tutors - filter enabled - public
+router.get('/', tutorController.getAllTutors);
+
+router.get('/:id', tutorController.getTutorById);
+
 // create profile
 router.put('/profile', requireAuth(Role.TUTOR), tutorController.createProfile);
 // create availability

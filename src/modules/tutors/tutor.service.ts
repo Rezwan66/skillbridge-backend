@@ -1,4 +1,5 @@
 import { TutorProfile } from '../../../generated/prisma/client';
+import { TutorProfileWhereInput } from '../../../generated/prisma/models';
 import { prisma } from '../../lib/prisma';
 
 const createProfile = async (
@@ -161,9 +162,113 @@ const updateTutorCategories = async (userId: string, categoryIds: string[]) => {
   });
 };
 
+const getAllTutors = async ({
+  search,
+  categoryId,
+  minRating,
+  maxPrice,
+  isFeatured,
+}: {
+  search: string | undefined;
+  categoryId: string | undefined;
+  minRating: number | undefined;
+  maxPrice: number | undefined;
+  isFeatured: boolean;
+}) => {
+  const andConditions: TutorProfileWhereInput | TutorProfileWhereInput[] = [];
+
+  if (search) {
+    andConditions.push({
+      OR: [
+        {
+          bio: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
+        {
+          tutorCategories: {
+            some: {
+              category: {
+                name: {
+                  contains: search,
+                  mode: 'insensitive',
+                },
+              },
+            },
+          },
+        },
+      ],
+    });
+  }
+
+  if (minRating) {
+    andConditions.push({
+      ratingAvg: {
+        gte: Number(minRating),
+      },
+    });
+  }
+
+  if (maxPrice) {
+    andConditions.push({
+      hourlyRate: {
+        lte: Number(maxPrice),
+      },
+    });
+  }
+
+  if (isFeatured !== undefined) {
+    andConditions.push({
+      isFeatured: isFeatured,
+    });
+  }
+
+  if (categoryId) {
+    andConditions.push({
+      tutorCategories: {
+        some: { categoryId },
+      },
+    });
+  }
+
+  const allTutors = await prisma.tutorProfile.findMany({
+    where: { AND: andConditions },
+    include: {
+      tutorCategories: { include: { category: true } },
+      availabilities: true,
+      bookings: true,
+      reviews: true,
+    },
+  });
+
+  return allTutors;
+};
+
+const getTutorById = async (id: string) => {
+  const tutor = await prisma.tutorProfile.findUnique({
+    where: { id },
+    include: {
+      reviews: true,
+      tutorCategories: {
+        include: { category: { select: { name: true } } },
+      },
+      availabilities: true,
+    },
+  });
+
+  if (!tutor) {
+    throw new Error('Tutor not found');
+  }
+
+  return tutor;
+};
+
 export const tutorService = {
   createProfile,
   createAvailability,
   updateAvailability,
   updateTutorCategories,
+  getAllTutors,
+  getTutorById,
 };
