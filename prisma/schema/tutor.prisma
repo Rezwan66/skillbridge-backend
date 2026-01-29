@@ -6,7 +6,7 @@ model TutorProfile {
     experienceYears Int?
     ratingAvg       Decimal?
     totalReviews    Int?
-    isFeatured      Boolean  @default(false)
+    isFeatured      Boolean? @default(false)
 
     tutorCategories TutorCategory[]
     availabilities  Availability[]
