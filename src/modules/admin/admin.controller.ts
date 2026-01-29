@@ -11,8 +11,10 @@ const getAllUsers = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'Cannot get users';
     res.status(400).json({
-      error: 'Cannot get users!',
+      error: errorMessage,
       details: error,
     });
   }

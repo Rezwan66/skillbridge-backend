@@ -44,7 +44,7 @@ const createProfile = async (
   return { result, created: true };
 };
 
-const updateAvailability = async (
+const createAvailability = async (
   id: string,
   { startTime, endTime }: { startTime: Date; endTime: Date },
 ) => {
@@ -79,7 +79,54 @@ const updateAvailability = async (
       endTime,
     },
   });
-  return { result, created: true };
+  return result;
 };
 
-export const tutorService = { createProfile, updateAvailability };
+const updateAvailability = async (
+  id: string,
+  tutorId: string,
+  { startTime, endTime }: { startTime: Date; endTime: Date },
+) => {
+  if (startTime >= endTime) {
+    throw new Error('Invalid input date range. Please check again.');
+  }
+
+  const tutorProfile = await prisma.tutorProfile.findUnique({
+    where: {
+      userId: tutorId,
+    },
+  });
+
+  if (!tutorProfile) {
+    throw new Error('Tutor profile not found.');
+  }
+
+  const availability = await prisma.availability.findUnique({
+    where: { id },
+  });
+
+  if (!availability || availability.tutorProfileId !== tutorProfile.id) {
+    throw new Error('Unauthorized or availability not found.');
+  }
+
+  if (availability.isBooked) {
+    throw new Error('Cannot update a booked slot.');
+  }
+
+  const result = await prisma.availability.update({
+    where: {
+      id,
+    },
+    data: {
+      startTime,
+      endTime,
+    },
+  });
+  return result;
+};
+
+export const tutorService = {
+  createProfile,
+  createAvailability,
+  updateAvailability,
+};
