@@ -37,7 +37,32 @@ const getAllCategories = async (_req: Request, res: Response) => {
   }
 };
 
+const updateCategoryStatus = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { isActive } = req.body;
+    const result = await categoryService.updateCategoryStatus(
+      id as string,
+      isActive,
+    );
+    // console.log(result);
+
+    res.status(200).json({
+      message: 'Updated category status',
+      data: result,
+    });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'Category status update failed';
+    res.status(400).json({
+      error: errorMessage,
+      details: error,
+    });
+  }
+};
+
 export const categoryController = {
   createCategory,
   getAllCategories,
+  updateCategoryStatus,
 };

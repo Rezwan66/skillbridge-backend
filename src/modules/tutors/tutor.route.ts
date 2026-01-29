@@ -5,17 +5,21 @@ import { Role } from '../../../generated/prisma/enums';
 
 const router = express.Router();
 
+// create profile
 router.put('/profile', requireAuth(Role.TUTOR), tutorController.createProfile);
+// create availability
 router.post(
   '/availability',
   requireAuth(Role.TUTOR),
   tutorController.createAvailability,
 );
+// update availability
 router.put(
   '/availability/:id',
   requireAuth(Role.TUTOR),
   tutorController.updateAvailability,
 );
+// update tutorCategories
 router.put('/categories', requireAuth(), tutorController.updateTutorCategories);
 
 export const tutorRouter: Router = router;

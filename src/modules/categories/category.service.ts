@@ -25,4 +25,26 @@ const getAllCategories = async () => {
   });
 };
 
-export const categoryService = { createCategory, getAllCategories };
+const updateCategoryStatus = async (id: string, isActive: boolean) => {
+  const category = await prisma.category.findUniqueOrThrow({
+    where: { id },
+    select: { id: true, isActive: true },
+  });
+
+  if (category.isActive === isActive) {
+    throw new Error(
+      `Your provided status (${isActive}) is already up to date!`,
+    );
+  }
+
+  return await prisma.category.update({
+    where: { id },
+    data: { isActive },
+  });
+};
+
+export const categoryService = {
+  createCategory,
+  getAllCategories,
+  updateCategoryStatus,
+};
