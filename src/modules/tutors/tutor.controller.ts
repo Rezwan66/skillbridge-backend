@@ -79,8 +79,36 @@ const updateAvailability = async (req: Request, res: Response) => {
   }
 };
 
+const updateTutorCategories = async (req: Request, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(400).json({
+        error: 'Unauthorized!',
+      });
+    }
+    const userId = req.user.id;
+    const { categoryIds } = req.body;
+    const result = await tutorService.updateTutorCategories(
+      userId,
+      categoryIds,
+    );
+    res.status(200).json({
+      message: 'Updated Tutor Categories',
+      data: result,
+    });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'Category Update Failed';
+    res.status(400).json({
+      error: errorMessage,
+      details: error,
+    });
+  }
+};
+
 export const tutorController = {
   createProfile,
   createAvailability,
   updateAvailability,
+  updateTutorCategories,
 };

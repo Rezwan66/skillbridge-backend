@@ -16,5 +16,6 @@ router.put(
   requireAuth(Role.TUTOR),
   tutorController.updateAvailability,
 );
+router.put('/categories', requireAuth(), tutorController.updateTutorCategories);
 
 export const tutorRouter: Router = router;

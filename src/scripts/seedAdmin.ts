@@ -32,17 +32,35 @@ async function seedAdmin() {
 
     console.log('***** Creating Admin User *****');
 
-    const signUpAdmin = await auth.api.signUpEmail({
-      body: adminData,
-    });
+    //# Another way: without needing Origin allowance
+    // const signUpAdmin = await auth.api.signUpEmail({
+    //   body: adminData,
+    // });
 
-    console.log(signUpAdmin);
+    // console.log(signUpAdmin);
 
-    if (signUpAdmin) {
+    // if (signUpAdmin) {
+    //   console.log('***** Success: Admin Created *****');
+    // } else {
+    //   throw new Error('Admin Creation Failed');
+    // }
+
+    const signUpAdmin = await fetch(
+      `${process.env.BACKEND_URL}/api/auth/sign-up/email`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Origin: `${process.env.APP_URL}`,
+        },
+        body: JSON.stringify(adminData),
+      },
+    );
+
+    if (signUpAdmin.ok) {
       console.log('***** Success: Admin Created *****');
-    } else {
-      throw new Error('Admin Creation Failed');
     }
+    console.log('***** END PROCESS *****');
   } catch (error) {
     console.error({ error });
   }

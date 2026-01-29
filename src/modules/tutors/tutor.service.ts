@@ -125,8 +125,45 @@ const updateAvailability = async (
   return result;
 };
 
+const updateTutorCategories = async (userId: string, categoryIds: string[]) => {
+  const tutorProfile = await prisma.tutorProfile.findUnique({
+    where: {
+      userId,
+    },
+  });
+
+  if (!tutorProfile) {
+    throw new Error('Tutor profile not found.');
+  }
+
+  const validCategories = await prisma.category.findMany({
+    where: {
+      id: { in: categoryIds },
+      isActive: true,
+    },
+  });
+
+  if (validCategories.length !== categoryIds.length) {
+    throw new Error('One or more categories are invalid');
+  }
+
+  // delete all stale categories
+  await prisma.tutorCategory.deleteMany({
+    where: { tutorProfileId: tutorProfile.id },
+  });
+
+  // create new categories in TutorCategory table
+  return await prisma.tutorCategory.createMany({
+    data: categoryIds.map(categoryId => ({
+      tutorProfileId: tutorProfile.id,
+      categoryId,
+    })),
+  });
+};
+
 export const tutorService = {
   createProfile,
   createAvailability,
   updateAvailability,
+  updateTutorCategories,
 };
