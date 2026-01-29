@@ -38,5 +38,34 @@ const updateUser = async (req: Request, res: Response) => {
     });
   }
 };
+const updateTutorFeaturedStatus = async (req: Request, res: Response) => {
+  try {
+    const tutorProfileId = req.params.id;
+    const { isFeatured } = req.body;
 
-export const adminController = { getAllUsers, updateUser };
+    const result = await adminService.updateTutorFeaturedStatus(
+      tutorProfileId as string,
+      isFeatured,
+    );
+
+    res.status(200).json({
+      message: 'Updated tutor featured status',
+      data: result,
+    });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : 'Tutor featured status update failed';
+    res.status(400).json({
+      error: errorMessage,
+      details: error,
+    });
+  }
+};
+
+export const adminController = {
+  getAllUsers,
+  updateUser,
+  updateTutorFeaturedStatus,
+};

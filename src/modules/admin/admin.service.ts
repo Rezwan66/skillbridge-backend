@@ -30,4 +30,28 @@ const updateUser = async (id: string, data: { status: UserStatus }) => {
   });
 };
 
-export const adminService = { getAllUsers, updateUser };
+const updateTutorFeaturedStatus = async (
+  tutorProfileId: string,
+  isFeatured: boolean,
+) => {
+  const tutorProfile = await prisma.tutorProfile.findUniqueOrThrow({
+    where: { id: tutorProfileId },
+  });
+
+  if (tutorProfile.isFeatured === isFeatured) {
+    throw new Error(
+      `Your provided featured status (${isFeatured}) is already up to date!`,
+    );
+  }
+
+  return await prisma.tutorProfile.update({
+    where: { id: tutorProfileId },
+    data: { isFeatured },
+  });
+};
+
+export const adminService = {
+  getAllUsers,
+  updateUser,
+  updateTutorFeaturedStatus,
+};

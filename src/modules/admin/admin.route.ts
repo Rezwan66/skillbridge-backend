@@ -11,4 +11,11 @@ router.get('/users', requireAuth(Role.ADMIN), adminController.getAllUsers);
 // Admin only - ban/active users
 router.patch('/users/:id', requireAuth(Role.ADMIN), adminController.updateUser);
 
+// Admin only - ban/active users
+router.patch(
+  '/tutors/:id/isfeatured',
+  requireAuth(Role.ADMIN),
+  adminController.updateTutorFeaturedStatus,
+);
+
 export const adminRouter: Router = router;
