@@ -11,7 +11,7 @@ router.get('/users', requireAuth(Role.ADMIN), adminController.getAllUsers);
 // Admin only - ban/active users
 router.patch('/users/:id', requireAuth(Role.ADMIN), adminController.updateUser);
 
-// Admin only - ban/active users
+// Admin only - feature tutors
 router.patch(
   '/tutors/:id/isfeatured',
   requireAuth(Role.ADMIN),

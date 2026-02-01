@@ -35,6 +35,25 @@ const createReview = async (req: Request, res: Response) => {
   }
 };
 
+const getAllReviews = async (req: Request, res: Response) => {
+  try {
+    const result = await reviewService.getAllReviews();
+
+    res.status(200).json({
+      message: 'Reviews retrieved successfully',
+      data: result,
+    });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'Failed to retrieve reviews';
+    res.status(400).json({
+      error: errorMessage,
+      details: error,
+    });
+  }
+};
+
 export const reviewController = {
   createReview,
+  getAllReviews,
 };

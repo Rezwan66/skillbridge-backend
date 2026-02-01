@@ -58,6 +58,13 @@ const createReview = async (
   return result;
 };
 
+const getAllReviews = async () => {
+  const result = await prisma.review.findMany();
+
+  return result;
+};
+
 export const reviewService = {
   createReview,
+  getAllReviews,
 };

@@ -4,6 +4,7 @@ import { prisma } from '../../lib/prisma';
 
 const createProfile = async (
   id: string,
+  name: string,
   data: Omit<TutorProfile, 'id' | 'createdAt' | 'updatedAt' | 'userId'>,
 ) => {
   const tutorProfile = await prisma.tutorProfile.findUnique({
@@ -26,6 +27,7 @@ const createProfile = async (
       data: {
         ...tutorProfile,
         ...data,
+        name,
         ratingAvg: ratingAggResult._avg.rating,
         totalReviews,
         isFeatured: false,
@@ -37,6 +39,7 @@ const createProfile = async (
     data: {
       ...data,
       userId: id,
+      name,
       ratingAvg: ratingAggResult._avg.rating,
       totalReviews,
       isFeatured: false,

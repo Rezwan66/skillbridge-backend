@@ -16,8 +16,10 @@ const createProfile = async (req: Request, res: Response) => {
         error: 'Unauthorized!',
       });
     }
+    const { id, name } = req.user;
     const result = await tutorService.createProfile(
-      req.user.id as string,
+      id as string,
+      name as string,
       req.body,
     );
     res.status(201).json({

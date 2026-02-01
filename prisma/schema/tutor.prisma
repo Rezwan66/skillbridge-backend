@@ -2,6 +2,7 @@ model TutorProfile {
     id              String   @id @default(uuid())
     userId          String   @unique //* better-auth
     bio             String?  @db.VarChar(255)
+    name            String?
     hourlyRate      Decimal?
     experienceYears Int?
     ratingAvg       Decimal?
