@@ -220,7 +220,7 @@ const getAllTutors = async ({
 
   if (isFeatured !== undefined) {
     andConditions.push({
-      isFeatured: isFeatured,
+      isFeatured: Boolean(isFeatured),
     });
   }
 
