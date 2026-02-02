@@ -55,8 +55,17 @@ const getMyBookings = async (userId: string, role: Role) => {
     return await prisma.booking.findMany({
       where: { studentId: userId },
       include: {
-        tutorProfile: true,
         availability: true,
+
+        tutorProfile: {
+          include: {
+            tutorCategories: {
+              include: {
+                category: true,
+              },
+            },
+          },
+        },
       },
     });
   }
@@ -71,6 +80,13 @@ const getMyBookings = async (userId: string, role: Role) => {
       include: {
         availability: true,
         review: true,
+        tutorProfile: {
+          include: {
+            tutorCategories: {
+              include: { category: true },
+            },
+          },
+        },
       },
     });
   }
