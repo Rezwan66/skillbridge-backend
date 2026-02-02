@@ -93,9 +93,17 @@ const getMyBookings = async (userId: string, role: Role) => {
 
   return await prisma.booking.findMany({
     include: {
-      tutorProfile: true,
       availability: true,
       review: true,
+      tutorProfile: {
+        include: {
+          tutorCategories: {
+            include: {
+              category: true,
+            },
+          },
+        },
+      },
     },
   });
 };
@@ -167,6 +175,11 @@ const updateBookingStatus = async (
 
     if (!tutorProfile || tutorProfile.id !== booking.tutorProfileId) {
       throw new Error('Unauthorized: you cannot update someone else`s booking');
+    }
+
+    const now = new Date();
+    if (now <= booking.availability.endTime) {
+      throw new Error('You cannot complete the session before it ends');
     }
 
     return await prisma.booking.update({
