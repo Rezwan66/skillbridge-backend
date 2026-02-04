@@ -4,6 +4,8 @@ import { userController } from './user.controller';
 
 const router = express.Router();
 
+router.get('/stats', requireAuth(), userController.getMyStats);
+
 // update profile
 router.patch('/me', requireAuth(), userController.updateMe);
 

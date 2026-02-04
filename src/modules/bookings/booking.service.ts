@@ -116,7 +116,15 @@ const getBookingById = async (
   const booking = await prisma.booking.findUniqueOrThrow({
     where: { id: bookingId },
     include: {
-      tutorProfile: true,
+      tutorProfile: {
+        include: {
+          tutorCategories: {
+            include: {
+              category: true,
+            },
+          },
+        },
+      },
       availability: true,
       review: true,
     },
@@ -160,12 +168,33 @@ const updateBookingStatus = async (
       throw new Error('Cannot cancel booking after session start');
     }
 
-    return await prisma.booking.update({
-      where: { id: bookingId },
-      data: {
-        status: BookingStatus.CANCELLED,
-      },
+    // return await prisma.booking.update({
+    //   where: { id: bookingId },
+    //   data: {
+    //     status: BookingStatus.CANCELLED,
+    //   },
+    // });
+
+    const result = await prisma.$transaction(async tx => {
+      const res = await tx.booking.update({
+        where: { id: bookingId },
+        data: {
+          status: BookingStatus.CANCELLED,
+        },
+      });
+
+      await prisma.availability.update({
+        where: {
+          id: booking.availabilityId,
+        },
+        data: {
+          isBooked: false,
+        },
+      });
+      return res;
     });
+
+    return result;
   }
 
   if (role === Role.TUTOR) {
