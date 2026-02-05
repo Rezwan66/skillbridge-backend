@@ -153,6 +153,29 @@ const getTutorById = async (req: Request, res: Response) => {
   }
 };
 
+const getMyTutorProfile = async (req: Request, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(400).json({
+        error: 'Unauthorized!',
+      });
+    }
+    const result = await tutorService.getMyTutorProfile(req.user.id);
+    console.log(result);
+    res.status(200).json({
+      message: 'Retrieved tutor successfully',
+      data: result,
+    });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'Tutor retrieval failed';
+    res.status(400).json({
+      error: errorMessage,
+      details: error,
+    });
+  }
+};
+
 export const tutorController = {
   createProfile,
   createAvailability,
@@ -160,4 +183,5 @@ export const tutorController = {
   updateTutorCategories,
   getAllTutors,
   getTutorById,
+  getMyTutorProfile,
 };

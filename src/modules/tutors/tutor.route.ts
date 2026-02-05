@@ -8,6 +8,12 @@ const router = express.Router();
 //* Get Tutors - filter enabled - public
 router.get('/', tutorController.getAllTutors);
 
+router.get(
+  '/my-profile',
+  requireAuth(Role.TUTOR),
+  tutorController.getMyTutorProfile,
+);
+
 router.get('/:id', tutorController.getTutorById);
 
 // create profile

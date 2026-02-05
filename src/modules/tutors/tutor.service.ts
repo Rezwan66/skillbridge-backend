@@ -267,6 +267,27 @@ const getTutorById = async (id: string) => {
   return tutor;
 };
 
+const getMyTutorProfile = async (userId: string) => {
+  const tutor = await prisma.tutorProfile.findUnique({
+    where: { userId: userId },
+    include: {
+      reviews: true,
+      tutorCategories: {
+        include: { category: { select: { name: true } } },
+      },
+      availabilities: true,
+    },
+  });
+
+  // if (!tutor) {
+  //   throw new Error('Tutor profile not found');
+  // }
+
+  console.log(tutor);
+
+  return tutor;
+};
+
 export const tutorService = {
   createProfile,
   createAvailability,
@@ -274,4 +295,5 @@ export const tutorService = {
   updateTutorCategories,
   getAllTutors,
   getTutorById,
+  getMyTutorProfile,
 };
