@@ -20,7 +20,7 @@ const createCategory = async (name: string) => {
 
 const getAllCategories = async () => {
   return await prisma.category.findMany({
-    where: { isActive: true },
+    // where: { isActive: true },
     orderBy: { name: 'asc' },
   });
 };

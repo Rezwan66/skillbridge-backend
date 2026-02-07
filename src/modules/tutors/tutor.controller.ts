@@ -19,7 +19,7 @@ const createProfile = async (req: Request, res: Response) => {
     const { id, name } = req.user;
     const result = await tutorService.createProfile(
       id as string,
-      name as string,
+      // name as string,
       req.body,
     );
     res.status(201).json({

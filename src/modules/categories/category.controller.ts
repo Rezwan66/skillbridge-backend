@@ -11,7 +11,7 @@ const createCategory = async (req: Request, res: Response) => {
     });
   } catch (error) {
     const errorMessage =
-      error instanceof Error ? error.message : 'Availability Creation Failed';
+      error instanceof Error ? error.message : 'Category creation failed';
     res.status(400).json({
       error: errorMessage,
       details: error,
