@@ -190,6 +190,12 @@ const getAllTutors = async ({
           },
         },
         {
+          name: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
+        {
           tutorCategories: {
             some: {
               category: {
