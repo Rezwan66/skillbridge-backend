@@ -3,30 +3,36 @@ import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { prisma } from './prisma';
 
 export const auth = betterAuth({
+  baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:5000',
   database: prismaAdapter(prisma, {
     provider: 'postgresql', // or "mysql", "postgresql", ...etc
   }),
-  trustedOrigins: [process.env.APP_URL!, 'http://localhost:4000'],
-  session: {
-    cookieCache: {
-      enabled: true,
-      maxAge: 5 * 60, // 5 minutes
-    },
+
+  trustedOrigins: async request => {
+    const origin = request?.headers.get('origin');
+
+    const allowedOrigins = [
+      process.env.APP_URL,
+      process.env.BETTER_AUTH_URL,
+      'http://localhost:3000',
+      'http://localhost:4000',
+      'http://localhost:5000',
+      'https://skillbridge-frontend-plum.vercel.app',
+      'https://skillbridge-backend-phi.vercel.app',
+    ].filter(Boolean);
+
+    // Check if origin matches allowed origins or Vercel pattern
+    if (
+      !origin ||
+      allowedOrigins.includes(origin) ||
+      /^https:\/\/.*\.vercel\.app$/.test(origin)
+    ) {
+      return [origin];
+    }
+
+    return [];
   },
-
-  advanced: {
-    cookiePrefix: 'better-auth',
-    useSecureCookies: process.env.NODE_ENV === 'production',
-
-    defaultCookieAttributes: {
-      sameSite: 'lax', // local: 'lax', prod: 'none'
-      secure: false, // local: false, prod: true
-      httpOnly: false, // local: false, prod: true
-    },
-
-    crossSubDomainCookies: { enabled: false },
-    disableCSRFCheck: true, // Allow requests without Origin header (Postman, mobile apps, etc.)
-  },
+  basePath: '/api/auth',
 
   user: {
     additionalFields: {

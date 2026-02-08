@@ -12,10 +12,13 @@ import { userRouter } from './modules/users/user.route';
 
 const app: Application = express();
 
+// Configure CORS to allow both production and Vercel preview deployments
 const allowedOrigins = [
-  process.env.APP_URL,
+  process.env.APP_URL || 'http://localhost:4000',
+  process.env.PROD_APP_URL, // Production frontend URL
+  'http://localhost:3000',
   'http://localhost:4000',
-  process.env.PROD_APP_URL,
+  'http://localhost:5000',
 ].filter(Boolean); // Remove undefined values
 
 app.use(
@@ -23,18 +26,19 @@ app.use(
     origin: (origin, callback) => {
       // Allow requests with no origin (mobile apps, Postman, etc.)
       if (!origin) return callback(null, true);
+
       // Check if origin is in allowedOrigins or matches Vercel preview pattern
       const isAllowed =
         allowedOrigins.includes(origin) ||
         /^https:\/\/next-blog-client.*\.vercel\.app$/.test(origin) ||
         /^https:\/\/.*\.vercel\.app$/.test(origin); // Any Vercel deployment
+
       if (isAllowed) {
         callback(null, true);
       } else {
         callback(new Error(`Origin ${origin} not allowed by CORS`));
       }
     },
-
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
