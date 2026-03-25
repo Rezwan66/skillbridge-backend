@@ -1,114 +1,71 @@
 import { Request, Response } from 'express';
 import { bookingService } from './booking.service';
 import { Role } from '../../../generated/prisma/enums';
+import catchAsync from '../../helpers/catchAsync';
+import sendResponse from '../../helpers/sendResponse';
+import { AppError } from '../../errors/AppError';
 
-const createBooking = async (req: Request, res: Response) => {
-  try {
-    if (!req.user) {
-      return res.status(400).json({
-        error: 'Unauthorized!',
-      });
-    }
-    const studentId = req.user.id;
-    const { availabilityId } = req.body;
-    const result = await bookingService.createBooking(
-      studentId,
-      availabilityId,
-    );
-    res.status(201).json({
-      message: 'Booking created successfully',
-      data: result,
-    });
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'Availability Creation Failed';
-    res.status(400).json({
-      error: errorMessage,
-      details: error,
-    });
-  }
-};
+const createBooking = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) throw new AppError(401, 'Unauthorized!');
+  
+  const studentId = req.user.id;
+  const { availabilityId } = req.body;
+  const result = await bookingService.createBooking(studentId, availabilityId);
+  
+  sendResponse(res, {
+    statusCode: 201,
+    success: true,
+    message: 'Booking created successfully',
+    data: result,
+  });
+});
 
-const getMyBookings = async (req: Request, res: Response) => {
-  try {
-    if (!req.user) {
-      return res.status(400).json({
-        error: 'Unauthorized!',
-      });
-    }
-    const userId = req.user.id as string;
-    const role = req.user.role as Role;
-    const result = await bookingService.getMyBookings(userId, role);
+const getMyBookings = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) throw new AppError(401, 'Unauthorized!');
+  
+  const userId = req.user.id as string;
+  const role = req.user.role as Role;
+  const result = await bookingService.getMyBookings(userId, role);
 
-    res.status(200).json({
-      message: 'Retrieved all bookings successfully',
-      data: result,
-    });
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'Cannot get bookings';
-    res.status(400).json({
-      error: errorMessage,
-      details: error,
-    });
-  }
-};
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Retrieved all bookings successfully',
+    data: result,
+  });
+});
 
-const getBookingById = async (req: Request, res: Response) => {
-  try {
-    if (!req.user) {
-      return res.status(400).json({
-        error: 'Unauthorized!',
-      });
-    }
-    const bookingId = req.params.id as string;
-    const userId = req.user.id as string;
-    const role = req.user.role as Role;
-    const result = await bookingService.getBookingById(bookingId, userId, role);
+const getBookingById = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) throw new AppError(401, 'Unauthorized!');
+  
+  const bookingId = req.params.id as string;
+  const userId = req.user.id as string;
+  const role = req.user.role as Role;
+  const result = await bookingService.getBookingById(bookingId, userId, role);
 
-    res.status(200).json({
-      message: 'Retrieved booking successfully',
-      data: result,
-    });
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'Cannot get booking';
-    res.status(400).json({
-      error: errorMessage,
-      details: error,
-    });
-  }
-};
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Retrieved booking successfully',
+    data: result,
+  });
+});
 
-const updateBookingStatus = async (req: Request, res: Response) => {
-  try {
-    if (!req.user) {
-      return res.status(400).json({
-        error: 'Unauthorized!',
-      });
-    }
-    const bookingId = req.params.id as string;
-    const userId = req.user.id as string;
-    const role = req.user.role as Role;
-    const result = await bookingService.updateBookingStatus(
-      bookingId,
-      userId,
-      role,
-    );
+const updateBookingStatus = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) throw new AppError(401, 'Unauthorized!');
+  
+  const bookingId = req.params.id as string;
+  const userId = req.user.id as string;
+  const role = req.user.role as Role;
+  const result = await bookingService.updateBookingStatus(bookingId, userId, role);
 
-    res.status(200).json({
-      message: 'Booking updated successfully',
-      data: result,
-    });
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'Cannot update booking';
-    res.status(400).json({
-      error: errorMessage,
-      details: error,
-    });
-  }
-};
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Booking updated successfully',
+    data: result,
+  });
+});
 
 export const bookingController = {
   createBooking,

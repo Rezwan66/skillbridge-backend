@@ -1,6 +1,8 @@
 import express, { Router } from 'express';
 import requireAuth from '../../middlewares/requireAuth';
 import { bookingController } from './booking.controller';
+import { bookingValidation } from './booking.validation';
+import validateRequest from '../../middlewares/validateRequest';
 import { Role } from '../../../generated/prisma/enums';
 
 const router = express.Router();
@@ -12,7 +14,7 @@ router.get('/', requireAuth(), bookingController.getMyBookings);
 router.get('/:id', requireAuth(), bookingController.getBookingById);
 
 // create booking - student only
-router.post('/', requireAuth(Role.STUDENT), bookingController.createBooking);
+router.post('/', requireAuth(Role.STUDENT), validateRequest(bookingValidation.createBookingValidationSchema), bookingController.createBooking);
 
 // update booking status - TUTOR/STUDENT
 router.patch(

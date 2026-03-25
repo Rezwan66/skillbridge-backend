@@ -1,65 +1,43 @@
 import { Request, Response } from 'express';
 import { categoryService } from './category.service';
+import catchAsync from '../../helpers/catchAsync';
+import sendResponse from '../../helpers/sendResponse';
 
-const createCategory = async (req: Request, res: Response) => {
-  try {
-    const { name } = req.body;
-    const result = await categoryService.createCategory(name);
-    res.status(201).json({
-      message: 'Category created successfully',
-      data: result,
-    });
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'Category creation failed';
-    res.status(400).json({
-      error: errorMessage,
-      details: error,
-    });
-  }
-};
+const createCategory = catchAsync(async (req: Request, res: Response) => {
+  const { name } = req.body;
+  const result = await categoryService.createCategory(name);
+  
+  sendResponse(res, {
+    statusCode: 201,
+    success: true,
+    message: 'Category created successfully',
+    data: result,
+  });
+});
 
-const getAllCategories = async (req: Request, res: Response) => {
-  try {
-    const result = await categoryService.getAllCategories();
+const getAllCategories = catchAsync(async (req: Request, res: Response) => {
+  const result = await categoryService.getAllCategories();
 
-    res.status(200).json({
-      message: 'Retrieved all categories',
-      data: result,
-    });
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'Availability Creation Failed';
-    res.status(400).json({
-      error: errorMessage,
-      details: error,
-    });
-  }
-};
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Retrieved all categories',
+    data: result,
+  });
+});
 
-const updateCategoryStatus = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const { isActive } = req.body;
-    const result = await categoryService.updateCategoryStatus(
-      id as string,
-      isActive,
-    );
-    // console.log(result);
+const updateCategoryStatus = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { isActive } = req.body;
+  const result = await categoryService.updateCategoryStatus(id as string, isActive);
 
-    res.status(200).json({
-      message: 'Updated category status',
-      data: result,
-    });
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'Category status update failed';
-    res.status(400).json({
-      error: errorMessage,
-      details: error,
-    });
-  }
-};
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Updated category status',
+    data: result,
+  });
+});
 
 export const categoryController = {
   createCategory,

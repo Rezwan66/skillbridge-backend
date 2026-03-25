@@ -1,57 +1,37 @@
 import { Request, Response } from 'express';
 import { reviewService } from './review.service';
 import { UserStatus } from '../../../generated/prisma/enums';
+import catchAsync from '../../helpers/catchAsync';
+import sendResponse from '../../helpers/sendResponse';
+import { AppError } from '../../errors/AppError';
 
-const createReview = async (req: Request, res: Response) => {
-  try {
-    if (!req.user) {
-      return res.status(400).json({
-        error: 'Unauthorized!',
-      });
-    }
+const createReview = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) throw new AppError(401, 'Unauthorized!');
 
-    if (req.user.status === UserStatus.BANNED) {
-      return res.status(400).json({
-        error: 'Unauthorized: you are banned from writing reviews',
-      });
-    }
-
-    const result = await reviewService.createReview(
-      req.user.id as string,
-      req.body,
-    );
-
-    res.status(201).json({
-      message: 'Review submitted successfully',
-      data: result,
-    });
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'Failed to submit review';
-    res.status(400).json({
-      error: errorMessage,
-      details: error,
-    });
+  if (req.user.status === UserStatus.BANNED) {
+    throw new AppError(403, 'Unauthorized: you are banned from writing reviews');
   }
-};
 
-const getAllReviews = async (req: Request, res: Response) => {
-  try {
-    const result = await reviewService.getAllReviews();
+  const result = await reviewService.createReview(req.user.id as string, req.body);
 
-    res.status(200).json({
-      message: 'Reviews retrieved successfully',
-      data: result,
-    });
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'Failed to retrieve reviews';
-    res.status(400).json({
-      error: errorMessage,
-      details: error,
-    });
-  }
-};
+  sendResponse(res, {
+    statusCode: 201,
+    success: true,
+    message: 'Review submitted successfully',
+    data: result,
+  });
+});
+
+const getAllReviews = catchAsync(async (req: Request, res: Response) => {
+  const result = await reviewService.getAllReviews();
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Reviews retrieved successfully',
+    data: result,
+  });
+});
 
 export const reviewController = {
   createReview,

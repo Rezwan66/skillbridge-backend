@@ -1,5 +1,8 @@
 import { Request, Response } from 'express';
 import { tutorService } from './tutor.service';
+import catchAsync from '../../helpers/catchAsync';
+import sendResponse from '../../helpers/sendResponse';
+import { AppError } from '../../errors/AppError';
 
 interface SearchQueryType {
   search: string | undefined;
@@ -9,172 +12,100 @@ interface SearchQueryType {
   isFeatured: boolean;
 }
 
-const createProfile = async (req: Request, res: Response) => {
-  try {
-    if (!req.user) {
-      return res.status(400).json({
-        error: 'Unauthorized!',
-      });
-    }
-    const { id, name } = req.user;
-    const result = await tutorService.createProfile(
-      id as string,
-      // name as string,
-      req.body,
-    );
-    res.status(201).json({
-      message: `${result.created ? 'Created' : 'Updated'} Tutor Profile`,
-      data: result.result,
-    });
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error
-        ? error.message
-        : 'Profile creation or update failed';
-    res.status(400).json({
-      error: errorMessage,
-      details: error,
-    });
-  }
-};
+const createProfile = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) throw new AppError(401, 'Unauthorized!');
+  
+  const { id } = req.user;
+  const result = await tutorService.createProfile(id as string, req.body);
+  
+  sendResponse(res, {
+    statusCode: 201,
+    success: true,
+    message: `${result.created ? 'Created' : 'Updated'} Tutor Profile`,
+    data: result.result,
+  });
+});
 
-const createAvailability = async (req: Request, res: Response) => {
-  try {
-    if (!req.user) {
-      return res.status(400).json({
-        error: 'Unauthorized!',
-      });
-    }
-    const result = await tutorService.createAvailability(
-      req.user.id as string,
-      req.body,
-    );
-    res.status(201).json({
-      message: 'Created Tutor Availability',
-      data: result,
-    });
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'Availability Creation Failed';
-    res.status(400).json({
-      error: errorMessage,
-      details: error,
-    });
-  }
-};
+const createAvailability = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) throw new AppError(401, 'Unauthorized!');
+  
+  const result = await tutorService.createAvailability(req.user.id as string, req.body);
+  
+  sendResponse(res, {
+    statusCode: 201,
+    success: true,
+    message: 'Created Tutor Availability',
+    data: result,
+  });
+});
 
-const updateAvailability = async (req: Request, res: Response) => {
-  try {
-    if (!req.user) {
-      return res.status(400).json({
-        error: 'Unauthorized!',
-      });
-    }
-    const result = await tutorService.updateAvailability(
-      req.params.id as string,
-      req.user.id as string,
-      req.body,
-    );
-    res.status(200).json({
-      message: 'Updated Tutor Availability',
-      data: result,
-    });
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'Availability Update Failed';
-    res.status(400).json({
-      error: errorMessage,
-      details: error,
-    });
-  }
-};
+const updateAvailability = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) throw new AppError(401, 'Unauthorized!');
+  
+  const result = await tutorService.updateAvailability(
+    req.params.id as string,
+    req.user.id as string,
+    req.body
+  );
+  
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Updated Tutor Availability',
+    data: result,
+  });
+});
 
-const updateTutorCategories = async (req: Request, res: Response) => {
-  try {
-    if (!req.user) {
-      return res.status(400).json({
-        error: 'Unauthorized!',
-      });
-    }
-    const userId = req.user.id;
-    const { categoryIds } = req.body;
-    const result = await tutorService.updateTutorCategories(
-      userId,
-      categoryIds,
-    );
-    res.status(200).json({
-      message: 'Updated Tutor Categories',
-      data: result,
-    });
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'Category Update Failed';
-    res.status(400).json({
-      error: errorMessage,
-      details: error,
-    });
-  }
-};
+const updateTutorCategories = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) throw new AppError(401, 'Unauthorized!');
+  
+  const userId = req.user.id;
+  const { categoryIds } = req.body;
+  const result = await tutorService.updateTutorCategories(userId, categoryIds);
+  
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Updated Tutor Categories',
+    data: result,
+  });
+});
 
-const getAllTutors = async (req: Request, res: Response) => {
-  try {
-    const result = await tutorService.getAllTutors(
-      req.query as unknown as SearchQueryType,
-    );
-    res.status(200).json({
-      message: 'Retrieved tutors successfully',
-      data: result,
-    });
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'Tutors retrieval failed';
-    res.status(400).json({
-      error: errorMessage,
-      details: error,
-    });
-  }
-};
+const getAllTutors = catchAsync(async (req: Request, res: Response) => {
+  const result = await tutorService.getAllTutors(req.query as unknown as SearchQueryType);
+  
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Retrieved tutors successfully',
+    data: result,
+  });
+});
 
-const getTutorById = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const result = await tutorService.getTutorById(id as string);
-    res.status(200).json({
-      message: 'Retrieved tutor successfully',
-      data: result,
-    });
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'Tutor retrieval failed';
-    res.status(400).json({
-      error: errorMessage,
-      details: error,
-    });
-  }
-};
+const getTutorById = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await tutorService.getTutorById(id as string);
+  
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Retrieved tutor successfully',
+    data: result,
+  });
+});
 
-const getMyTutorProfile = async (req: Request, res: Response) => {
-  try {
-    if (!req.user) {
-      return res.status(400).json({
-        error: 'Unauthorized!',
-      });
-    }
-    const result = await tutorService.getMyTutorProfile(req.user.id);
-    console.log(result);
-    res.status(200).json({
-      message: 'Retrieved tutor successfully',
-      data: result,
-    });
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'Tutor retrieval failed';
-    res.status(400).json({
-      error: errorMessage,
-      details: error,
-    });
-  }
-};
+const getMyTutorProfile = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) throw new AppError(401, 'Unauthorized!');
+  
+  const result = await tutorService.getMyTutorProfile(req.user.id);
+  
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Retrieved tutor successfully',
+    data: result,
+  });
+});
 
 export const tutorController = {
   createProfile,

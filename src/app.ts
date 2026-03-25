@@ -3,6 +3,7 @@ import cors from 'cors';
 import { toNodeHandler } from 'better-auth/node';
 import { auth } from './lib/auth';
 import { notFound } from './middlewares/notFound';
+import globalErrorHandler from './middlewares/globalErrorHandler';
 import { tutorRouter } from './modules/tutors/tutor.route';
 import { categoryRouter } from './modules/categories/category.route';
 import { bookingRouter } from './modules/bookings/booking.route';
@@ -64,6 +65,8 @@ app.get('/', (req, res) => {
   res.send('SkillBridge Server is Running 🎓');
 });
 
+// Global error handler
+app.use(globalErrorHandler);
 app.use(notFound);
 
 export default app;

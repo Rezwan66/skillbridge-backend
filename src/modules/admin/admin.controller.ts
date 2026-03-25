@@ -1,68 +1,44 @@
 import { Request, Response } from 'express';
 import { adminService } from './admin.service';
+import catchAsync from '../../helpers/catchAsync';
+import sendResponse from '../../helpers/sendResponse';
 
-const getAllUsers = async (req: Request, res: Response) => {
-  try {
-    const result = await adminService.getAllUsers();
-    // console.log(result);
+const getAllUsers = catchAsync(async (req: Request, res: Response) => {
+  const result = await adminService.getAllUsers();
 
-    res.status(200).json({
-      message: 'Retrieved all users successfully',
-      data: result,
-    });
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'Cannot get users';
-    res.status(400).json({
-      error: errorMessage,
-      details: error,
-    });
-  }
-};
-const updateUser = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const result = await adminService.updateUser(id as string, req.body);
-    // console.log(result);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Retrieved all users successfully',
+    data: result,
+  });
+});
 
-    res.status(200).json({
-      message: 'Updated user status',
-      data: result,
-    });
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'User status update failed';
-    res.status(400).json({
-      error: errorMessage,
-      details: error,
-    });
-  }
-};
-const updateTutorFeaturedStatus = async (req: Request, res: Response) => {
-  try {
-    const tutorProfileId = req.params.id;
-    const { isFeatured } = req.body;
+const updateUser = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await adminService.updateUser(id as string, req.body);
 
-    const result = await adminService.updateTutorFeaturedStatus(
-      tutorProfileId as string,
-      isFeatured,
-    );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Updated user status',
+    data: result,
+  });
+});
 
-    res.status(200).json({
-      message: 'Updated tutor featured status',
-      data: result,
-    });
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error
-        ? error.message
-        : 'Tutor featured status update failed';
-    res.status(400).json({
-      error: errorMessage,
-      details: error,
-    });
-  }
-};
+const updateTutorFeaturedStatus = catchAsync(async (req: Request, res: Response) => {
+  const tutorProfileId = req.params.id;
+  const { isFeatured } = req.body;
+
+  const result = await adminService.updateTutorFeaturedStatus(tutorProfileId as string, isFeatured);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Updated tutor featured status',
+    data: result,
+  });
+});
 
 export const adminController = {
   getAllUsers,

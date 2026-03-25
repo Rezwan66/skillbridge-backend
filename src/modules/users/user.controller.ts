@@ -1,55 +1,38 @@
 import { Request, Response } from 'express';
 import { userService } from './user.service';
 import { Role } from '../../../generated/prisma/enums';
+import catchAsync from '../../helpers/catchAsync';
+import sendResponse from '../../helpers/sendResponse';
+import { AppError } from '../../errors/AppError';
 
-const updateMe = async (req: Request, res: Response) => {
-  try {
-    if (!req.user) {
-      return res.status(400).json({
-        error: 'Unauthorized!',
-      });
-    }
-    const userId = req.user.id as string;
+const updateMe = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) throw new AppError(401, 'Unauthorized!');
+  
+  const userId = req.user.id as string;
+  const result = await userService.updateMe(userId, req.body);
+  
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Updated User Profile',
+    data: result,
+  });
+});
 
-    const result = await userService.updateMe(userId, req.body);
-    res.status(200).json({
-      message: `Updated User Profile`,
-      data: result,
-    });
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'Profile update failed';
-    res.status(400).json({
-      error: errorMessage,
-      details: error,
-    });
-  }
-};
-
-const getMyStats = async (req: Request, res: Response) => {
-  try {
-    if (!req.user) {
-      return res.status(400).json({
-        error: 'Unauthorized!',
-      });
-    }
-    const userId = req.user.id as string;
-    const role = req.user.role as Role;
-
-    const result = await userService.getMyStats(userId, role);
-    res.status(200).json({
-      message: `Retrieved Stats`,
-      data: result,
-    });
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'Profile update failed';
-    res.status(400).json({
-      error: errorMessage,
-      details: error,
-    });
-  }
-};
+const getMyStats = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) throw new AppError(401, 'Unauthorized!');
+  
+  const userId = req.user.id as string;
+  const role = req.user.role as Role;
+  const result = await userService.getMyStats(userId, role);
+  
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Retrieved Stats',
+    data: result,
+  });
+});
 
 export const userController = {
   updateMe,
