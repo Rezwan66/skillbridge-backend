@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { auth } from '../lib/auth';
 import { fromNodeHeaders } from 'better-auth/node';
 import { Role } from '../../generated/prisma/enums';
+import { AppError } from '../errors/AppError';
 
 declare global {
   namespace Express {
@@ -26,18 +27,11 @@ const requireAuth = (...roles: Role[]) => {
       console.log('from requireAuth-->', session?.user);
 
       if (!session) {
-        return res.status(401).json({
-          success: false,
-          message: 'You are not authorized!',
-        });
+        throw new AppError(401, 'You are not authorized!');
       }
 
       if (roles.length && !roles.includes(session.user.role as Role)) {
-        return res.status(403).json({
-          success: false,
-          message:
-            'Forbidden! You don`t have permission to access this resource.',
-        });
+        throw new AppError(403, 'Forbidden! You don`t have permission to access this resource.');
       }
 
       req.user = {
