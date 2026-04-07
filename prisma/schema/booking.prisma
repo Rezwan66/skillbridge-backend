@@ -4,10 +4,12 @@ model Booking {
   tutorProfileId String
   availabilityId String        @unique
   status         BookingStatus @default(CONFIRMED)
+  paymentStatus  PaymentStatus @default(UNPAID)
 
   tutorProfile TutorProfile @relation(fields: [tutorProfileId], references: [id])
   availability Availability @relation(fields: [availabilityId], references: [id])
   review       Review?
+  payment      Payment?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

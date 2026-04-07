@@ -23,4 +23,10 @@ router.patch(
   bookingController.updateBookingStatus,
 );
 
+router.post(
+  '/initiate-payment/:id',
+  requireAuth(Role.STUDENT),
+  bookingController.initiatePayment,
+);
+
 export const bookingRouter: Router = router;

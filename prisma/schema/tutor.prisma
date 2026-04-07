@@ -1,19 +1,19 @@
 model TutorProfile {
-    id              String   @id @default(uuid())
-    userId          String   @unique //* better-auth
-    bio             String?  @db.VarChar(255)
-    name            String?
-    hourlyRate      Decimal?
-    experienceYears Int?
-    ratingAvg       Decimal?
-    totalReviews    Int?
-    isFeatured      Boolean? @default(false)
+  id              String   @id @default(uuid())
+  userId          String   @unique //* better-auth
+  bio             String?  @db.VarChar(255)
+  name            String?
+  hourlyRate      Decimal?
+  experienceYears Int?
+  ratingAvg       Decimal?
+  totalReviews    Int?
+  isFeatured      Boolean? @default(false)
 
-    tutorCategories TutorCategory[]
-    availabilities  Availability[]
-    bookings        Booking[]
-    reviews         Review[]
+  tutorCategories TutorCategory[]
+  availabilities  Availability[]
+  bookings        Booking[]
+  reviews         Review[]
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

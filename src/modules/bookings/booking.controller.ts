@@ -67,9 +67,24 @@ const updateBookingStatus = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const initiatePayment = catchAsync(async (req: Request, res: Response) => {
+  const bookingId = req.params.id as string;
+  const user = req.user!;
+  
+  const paymentInfo = await bookingService.initiatePayment(bookingId, user.id as string);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Payment initiated successfully',
+    data: paymentInfo,
+  });
+});
+
 export const bookingController = {
   createBooking,
   getMyBookings,
   getBookingById,
   updateBookingStatus,
+  initiatePayment,
 };

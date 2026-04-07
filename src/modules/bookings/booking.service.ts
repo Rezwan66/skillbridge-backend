@@ -1,9 +1,12 @@
 import {
   BookingStatus,
+  PaymentStatus,
   Role,
   UserStatus,
 } from '../../../generated/prisma/enums';
 import { prisma } from '../../lib/prisma';
+import { v7 as uuidv7 } from 'uuid';
+import { stripe } from '../../lib/stripe';
 
 const createBooking = async (studentId: string, availabilityId: string) => {
   const student = await prisma.user.findUnique({
@@ -43,11 +46,80 @@ const createBooking = async (studentId: string, availabilityId: string) => {
       where: { id: availabilityId },
       data: { isBooked: true },
     });
+    
+    const transactionId = String(uuidv7());
+    const amount = availability.tutorProfile.hourlyRate ? Number(availability.tutorProfile.hourlyRate) : 0;
+
+    await tx.payment.create({
+      data: {
+        bookingId: newBooking.id,
+        amount: amount,
+        transactionId,
+      }
+    });
 
     return newBooking;
   });
 
   return booking;
+};
+
+const initiatePayment = async (bookingId: string, studentId: string) => {
+  const bookingData = await prisma.booking.findUnique({
+    where: {
+      id: bookingId,
+      studentId: studentId,
+    },
+    include: {
+      tutorProfile: true,
+      payment: true,
+    }
+  });
+
+  if (!bookingData) {
+    throw new Error("Booking not found");
+  }
+
+  if (!bookingData.payment) {
+    throw new Error("Payment data not found for this booking");
+  }
+
+  if (bookingData.payment.status === PaymentStatus.PAID) {
+    throw new Error("Payment already completed for this booking");
+  }
+
+  if (bookingData.status === BookingStatus.CANCELLED) {
+    throw new Error("Booking is canceled");
+  }
+
+  const frontendUrl = process.env.FRONTEND_URL || process.env.APP_URL || 'http://localhost:3000';
+
+  const session = await stripe.checkout.sessions.create({
+    payment_method_types: ["card"],
+    mode: 'payment',
+    line_items: [
+      {
+        price_data: {
+          currency: "bdt",
+          product_data: {
+            name: `Session with ${bookingData.tutorProfile.name || 'Tutor'}`,
+          },
+          unit_amount: (bookingData.payment.amount || 0) * 100, // Amount in cents/paisa
+        },
+        quantity: 1,
+      }
+    ],
+    metadata: {
+      bookingId: bookingData.id,
+      paymentId: bookingData.payment.id,
+    },
+    success_url: `${frontendUrl}/dashboard/payment/payment-success?booking_id=${bookingData.id}&payment_id=${bookingData.payment.id}`,
+    cancel_url: `${frontendUrl}/dashboard/student/bookings?error=payment_cancelled`,
+  });
+
+  return {
+    paymentUrl: session.url,
+  }
 };
 
 const getMyBookings = async (userId: string, role: Role) => {
@@ -225,4 +297,5 @@ export const bookingService = {
   getMyBookings,
   getBookingById,
   updateBookingStatus,
+  initiatePayment,
 };

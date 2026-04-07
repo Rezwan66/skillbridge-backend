@@ -1,16 +1,22 @@
 enum Role {
-    STUDENT
-    TUTOR
-    ADMIN
+  STUDENT
+  TUTOR
+  ADMIN
 }
 
 enum BookingStatus {
-    CONFIRMED
-    CANCELLED
-    COMPLETED
+  CONFIRMED
+  CANCELLED
+  COMPLETED
 }
 
 enum UserStatus {
-    ACTIVE
-    BANNED
+  ACTIVE
+  BANNED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+  FAILED
 }

@@ -10,6 +10,7 @@ import { bookingRouter } from './modules/bookings/booking.route';
 import { reviewRouter } from './modules/reviews/review.route';
 import { adminRouter } from './modules/admin/admin.route';
 import { userRouter } from './modules/users/user.route';
+import { PaymentController } from './modules/payments/payment.controller';
 
 const app: Application = express();
 
@@ -45,6 +46,12 @@ app.use(
     allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto'],
     exposedHeaders: ['Set-Cookie', 'x-forwarded-host', 'x-forwarded-proto'],
   }),
+);
+
+app.post(
+  '/api/payments/webhook',
+  express.raw({ type: 'application/json' }),
+  PaymentController.handleStripeWebhookEvent,
 );
 
 app.use(express.json());
