@@ -10,6 +10,7 @@ model User {
   status        String?   @default("ACTIVE")
   sessions      Session[]
   accounts      Account[]
+  tutorProfile  TutorProfile?
 
   @@unique([email])
   @@map("user")

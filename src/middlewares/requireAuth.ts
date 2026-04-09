@@ -24,7 +24,7 @@ const requireAuth = (...roles: Role[]) => {
       const session = await auth.api.getSession({
         headers: fromNodeHeaders(req.headers),
       });
-      console.log('from requireAuth-->', session?.user);
+      // console.log('from requireAuth-->', session?.user);
 
       if (!session) {
         throw new AppError(401, 'You are not authorized!');

@@ -27,6 +27,8 @@ const getMyBookings = catchAsync(async (req: Request, res: Response) => {
   const role = req.user.role as Role;
   const result = await bookingService.getMyBookings(userId, role);
 
+  console.log("BACKEND SENDING RESULT:", JSON.stringify(result).substring(0, 500));
+
   sendResponse(res, {
     statusCode: 200,
     success: true,
