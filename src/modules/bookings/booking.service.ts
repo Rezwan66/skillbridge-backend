@@ -73,6 +73,7 @@ const initiatePayment = async (bookingId: string, studentId: string) => {
     include: {
       tutorProfile: true,
       payment: true,
+      availability: true,
     }
   });
 
@@ -100,7 +101,7 @@ const initiatePayment = async (bookingId: string, studentId: string) => {
     line_items: [
       {
         price_data: {
-          currency: "bdt",
+          currency: "eur",
           product_data: {
             name: `Session with ${bookingData.tutorProfile.name || 'Tutor'}`,
           },
@@ -113,7 +114,7 @@ const initiatePayment = async (bookingId: string, studentId: string) => {
       bookingId: bookingData.id,
       paymentId: bookingData.payment.id,
     },
-    success_url: `${frontendUrl}/dashboard/payment/payment-success?booking_id=${bookingData.id}&payment_id=${bookingData.payment.id}`,
+    success_url: `${frontendUrl}/dashboard/payment/payment-success?booking_id=${bookingData.id}&payment_id=${bookingData.payment.id}&tutor_name=${encodeURIComponent(bookingData.tutorProfile.name || 'Tutor')}&amount=${bookingData.payment.amount || 0}&start_time=${encodeURIComponent(bookingData.availability.startTime.toISOString())}&end_time=${encodeURIComponent(bookingData.availability.endTime.toISOString())}`,
     cancel_url: `${frontendUrl}/dashboard/student/bookings?error=payment_cancelled`,
   });
 
