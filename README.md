@@ -1,73 +1,245 @@
-# Skillbridge Backend 🎓
+# SkillBridge Backend 🎓
 
-Postgres, Prisma, Express Backend for Skillbridge lesson-booking platform.
+**SkillBridge** is a full-stack tutoring platform where students can discover expert tutors, book lesson slots, and pay securely via Stripe. This repository contains the **backend REST API** powering the platform.
 
-## 🍰 Resources
+🔗 **Live API:** [https://skillbridge-backend.vercel.app](https://skillbridge-backend.vercel.app)
+🔗 **Frontend Repo:** [skillbridge-frontend](https://github.com/Rezwan66/skillbridge-frontend)
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer          | Technology                                                      |
+| -------------- | --------------------------------------------------------------- |
+| Runtime        | Node.js (v20+)                                                  |
+| Framework      | Express.js v5                                                   |
+| Language       | TypeScript                                                      |
+| Database       | PostgreSQL                                                      |
+| ORM            | Prisma v7 (multi-schema)                                        |
+| Authentication | Better Auth (session-based with cookie tokens)                  |
+| Payments       | Stripe (Checkout Sessions + Webhooks)                           |
+| Validation     | Zod v4                                                          |
+| Deployment     | Vercel (Serverless)                                             |
+
+---
+
+## 📐 System Architecture
 
 ### System Design
 
-![alt text](skillbridge-system-design.png)
+![System Design](skillbridge-system-design.png)
 
 ### Entity Relationship Diagram
 
-![alt text](SkillBridge_ER.drawio.png)
+![ER Diagram](SkillBridge_ER.drawio.png)
 
-### ✅ Getting Started
+---
 
-Follow these steps to set up and run the backend server on your local machine.
+## ✨ Key Features
 
-Clone the repository and navigate to the cloned repo.
+- **Role-Based Access Control** — Three distinct roles: `STUDENT`, `TUTOR`, and `ADMIN`, each with scoped permissions.
+- **Tutor Discovery** — Search, filter by category, rating, and hourly rate with full-text search across name, bio, and categories.
+- **Availability Management** — Tutors create time slots; students book them. Slots are atomically marked as booked.
+- **Booking Lifecycle** — Full status flow: `CONFIRMED` → `COMPLETED` / `CANCELLED` with server-side validation (e.g., cannot complete before end time).
+- **Stripe Payment Integration** — Checkout sessions with EUR currency. Webhook listener auto-updates payment status on success.
+- **Review System** — Students rate tutors post-session with star ratings and written reviews.
+- **Admin Dashboard** — Manage users, tutors, categories, and platform-wide data.
 
-#### Install Dependencies
+---
+
+## 📁 Project Structure
+
+```
+src/
+├── app.ts                  # Express app configuration, middleware, routes
+├── server.ts               # HTTP server entry point
+├── index.ts                # Vercel serverless entry
+├── errors/                 # Custom AppError class
+├── helpers/                # Utility helpers (catchAsync, sendResponse)
+├── lib/                    # Prisma client, Better Auth, Stripe config
+├── middlewares/            # Auth guard, global error handler
+├── scripts/                # Database seed scripts (admin seeding)
+└── modules/
+    ├── admin/              # Admin management (route, controller, service)
+    ├── bookings/           # Booking CRUD + payment initiation
+    ├── categories/         # Teaching category management
+    ├── payments/           # Stripe webhook handler
+    ├── reviews/            # Student review system
+    ├── tutors/             # Tutor profiles, search, availability
+    └── users/              # User profile management
+```
+
+---
+
+## 🔌 API Endpoints
+
+### 🔐 Authentication (Better Auth)
+
+| Method | Endpoint                         | Description            |
+| ------ | -------------------------------- | ---------------------- |
+| POST   | `/api/auth/sign-up/email`        | Register a new user    |
+| POST   | `/api/auth/sign-in/email`        | Login with credentials |
+| GET    | `/api/auth/get-session`          | Get current session    |
+
+### 👤 Users
+
+| Method | Endpoint               | Access  | Description               |
+| ------ | ---------------------- | ------- | ------------------------- |
+| GET    | `/api/users/me`        | Auth    | Get current user profile  |
+| PATCH  | `/api/users/me`        | Auth    | Update user profile       |
+
+### 🎓 Tutors
+
+| Method | Endpoint                         | Access  | Description                          |
+| ------ | -------------------------------- | ------- | ------------------------------------ |
+| GET    | `/api/tutors`                    | Public  | List all tutors (with filters)       |
+| GET    | `/api/tutors/:id`                | Public  | Get tutor profile by ID              |
+| POST   | `/api/tutors`                    | Tutor   | Create tutor profile                 |
+| PATCH  | `/api/tutors`                    | Tutor   | Update tutor profile                 |
+| POST   | `/api/tutors/availability`       | Tutor   | Create availability slot             |
+| DELETE | `/api/tutors/availability/:id`   | Tutor   | Delete availability slot             |
+
+### 📅 Bookings
+
+| Method | Endpoint                              | Access  | Description                      |
+| ------ | ------------------------------------- | ------- | -------------------------------- |
+| GET    | `/api/bookings`                       | Auth    | Get user's bookings              |
+| POST   | `/api/bookings`                       | Student | Create a booking                 |
+| PATCH  | `/api/bookings/:id/status`            | Tutor   | Complete or cancel a booking     |
+| POST   | `/api/bookings/initiate-payment/:id`  | Student | Create Stripe checkout session   |
+
+### 💳 Payments
+
+| Method | Endpoint                  | Access  | Description                     |
+| ------ | ------------------------- | ------- | ------------------------------- |
+| POST   | `/api/payments/webhook`   | Stripe  | Handle Stripe webhook events    |
+
+### ⭐ Reviews
+
+| Method | Endpoint            | Access  | Description              |
+| ------ | ------------------- | ------- | ------------------------ |
+| GET    | `/api/reviews`      | Public  | Get all reviews          |
+| POST   | `/api/reviews`      | Student | Create a review          |
+
+### 📂 Categories
+
+| Method | Endpoint             | Access  | Description              |
+| ------ | -------------------- | ------- | ------------------------ |
+| GET    | `/api/categories`    | Public  | List all categories      |
+| POST   | `/api/categories`    | Admin   | Create a category        |
+
+### 🛡️ Admin
+
+| Method | Endpoint                  | Access | Description              |
+| ------ | ------------------------- | ------ | ------------------------ |
+| GET    | `/api/admin/users`        | Admin  | Get all platform users   |
+| PATCH  | `/api/admin/users/:id`    | Admin  | Update user (ban, role)  |
+
+---
+
+## ✅ Getting Started
+
+Follow these steps to set up and run the backend server locally.
+
+### Prerequisites
+
+- Node.js v20+
+- PostgreSQL database
+- Stripe account (for payment features)
+
+### 1. Clone & Install
 
 ```bash
+git clone https://github.com/Rezwan66/skillbridge-backend.git
+cd skillbridge-backend
 npm install
 ```
 
-#### Configure Environment Variables
+### 2. Configure Environment Variables
 
-Create a `.env` file in the root of your project and add the necessary environment variables.
-
-Example `.env`:
+Create a `.env` file in the project root:
 
 ```env
-DATABASE_URL="postgresql://username:password@localhost:5432/prisma-blog-app?schema=public"
+# Database
+DATABASE_URL="postgresql://username:password@localhost:5432/skillbridge?schema=public"
+
+# Server
 PORT=5000
-BETTER_AUTH_SECRET=better-auth-secret
-BETTER_AUTH_URL=http://localhost:5000 # Base URL of your app
+
+# Better Auth
+BETTER_AUTH_SECRET=your-secret-key
+BETTER_AUTH_URL=http://localhost:5000
 BACKEND_URL=http://localhost:5000
-APP_URL=http://localhost:3000 # Nextjs Frontend
-APP_URL=http://localhost:4000 # Postman Frontend
+
+# Frontend URL (CORS)
+APP_URL=http://localhost:3000
+
+# Stripe
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
 ```
 
-#### Run the Server
+### 3. Database Setup
 
-After configuring the environment variables, run this command to start the project.
+```bash
+# Generate Prisma client types
+npx prisma generate
+
+# Run database migrations
+npx prisma migrate dev
+
+# (Optional) Seed admin user
+npm run seed:admin
+
+# (Optional) Open Prisma Studio to inspect data
+npx prisma studio
+```
+
+### 4. Run the Server
 
 ```bash
 npm run dev
 ```
 
-### Generate all possible types for our tables:
+The server will start at `http://localhost:5000`.
 
-```powershell
-    npx prisma generate
+---
+
+## 🧪 Useful Commands
+
+| Command                              | Description                                |
+| ------------------------------------ | ------------------------------------------ |
+| `npm run dev`                        | Start development server with hot reload   |
+| `npm run build`                      | Build for Vercel deployment                |
+| `npm run seed:admin`                 | Seed the admin user                        |
+| `npx prisma generate`               | Regenerate Prisma client types             |
+| `npx prisma migrate dev`            | Apply schema migrations                    |
+| `npx prisma studio`                 | Open Prisma Studio GUI                     |
+| `npx @better-auth/cli generate`     | Regenerate Better Auth user models         |
+
+---
+
+## 🔒 Error Handling
+
+The API uses a centralized global error handler that returns consistent error responses:
+
+```json
+{
+  "success": false,
+  "message": "Descriptive error message",
+  "errorSource": [
+    {
+      "path": "fieldName",
+      "message": "Specific validation error"
+    }
+  ]
+}
 ```
 
-### Generate user models & types using Better-Auth:
+Handled error types: `ZodError`, `PrismaClientKnownRequestError`, `PrismaClientValidationError`, `AppError`, and generic `Error`.
 
-```powershell
-    npx @better-auth/cli generate
-```
+---
 
-### Migrate all prisma schemas to SQL database:
+<!-- ## 📄 License
 
-```powershell
-    npx prisma migrate dev
-```
-
-### Run Prisma Studio:
-
-```powershell
-    npx prisma studio
-```
+This project is part of the **Programming Hero** Level 2 Web Development course — Mission 5, Assignment 5. -->
