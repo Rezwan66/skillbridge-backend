@@ -9,17 +9,17 @@
 
 ## 🛠️ Tech Stack
 
-| Layer          | Technology                                                      |
-| -------------- | --------------------------------------------------------------- |
-| Runtime        | Node.js (v20+)                                                  |
-| Framework      | Express.js v5                                                   |
-| Language       | TypeScript                                                      |
-| Database       | PostgreSQL                                                      |
-| ORM            | Prisma v7 (multi-schema)                                        |
-| Authentication | Better Auth (session-based with cookie tokens)                  |
-| Payments       | Stripe (Checkout Sessions + Webhooks)                           |
-| Validation     | Zod v4                                                          |
-| Deployment     | Vercel (Serverless)                                             |
+| Layer          | Technology                                     |
+| -------------- | ---------------------------------------------- |
+| Runtime        | Node.js (v20+)                                 |
+| Framework      | Express.js v5                                  |
+| Language       | TypeScript                                     |
+| Database       | PostgreSQL                                     |
+| ORM            | Prisma v7 (multi-schema)                       |
+| Authentication | Better Auth (session-based with cookie tokens) |
+| Payments       | Stripe (Checkout Sessions + Webhooks)          |
+| Validation     | Zod v4                                         |
+| Deployment     | Vercel (Serverless)                            |
 
 ---
 
@@ -75,65 +75,65 @@ src/
 
 ### 🔐 Authentication (Better Auth)
 
-| Method | Endpoint                         | Description            |
-| ------ | -------------------------------- | ---------------------- |
-| POST   | `/api/auth/sign-up/email`        | Register a new user    |
-| POST   | `/api/auth/sign-in/email`        | Login with credentials |
-| GET    | `/api/auth/get-session`          | Get current session    |
+| Method | Endpoint                  | Description            |
+| ------ | ------------------------- | ---------------------- |
+| POST   | `/api/auth/sign-up/email` | Register a new user    |
+| POST   | `/api/auth/sign-in/email` | Login with credentials |
+| GET    | `/api/auth/get-session`   | Get current session    |
 
 ### 👤 Users
 
-| Method | Endpoint               | Access  | Description               |
-| ------ | ---------------------- | ------- | ------------------------- |
-| GET    | `/api/users/me`        | Auth    | Get current user profile  |
-| PATCH  | `/api/users/me`        | Auth    | Update user profile       |
+| Method | Endpoint        | Access | Description              |
+| ------ | --------------- | ------ | ------------------------ |
+| GET    | `/api/users/me` | Auth   | Get current user profile |
+| PATCH  | `/api/users/me` | Auth   | Update user profile      |
 
 ### 🎓 Tutors
 
-| Method | Endpoint                         | Access  | Description                          |
-| ------ | -------------------------------- | ------- | ------------------------------------ |
-| GET    | `/api/tutors`                    | Public  | List all tutors (with filters)       |
-| GET    | `/api/tutors/:id`                | Public  | Get tutor profile by ID              |
-| POST   | `/api/tutors`                    | Tutor   | Create tutor profile                 |
-| PATCH  | `/api/tutors`                    | Tutor   | Update tutor profile                 |
-| POST   | `/api/tutors/availability`       | Tutor   | Create availability slot             |
-| DELETE | `/api/tutors/availability/:id`   | Tutor   | Delete availability slot             |
+| Method | Endpoint                       | Access | Description                    |
+| ------ | ------------------------------ | ------ | ------------------------------ |
+| GET    | `/api/tutors`                  | Public | List all tutors (with filters) |
+| GET    | `/api/tutors/:id`              | Public | Get tutor profile by ID        |
+| POST   | `/api/tutors`                  | Tutor  | Create tutor profile           |
+| PATCH  | `/api/tutors`                  | Tutor  | Update tutor profile           |
+| POST   | `/api/tutors/availability`     | Tutor  | Create availability slot       |
+| DELETE | `/api/tutors/availability/:id` | Tutor  | Delete availability slot       |
 
 ### 📅 Bookings
 
-| Method | Endpoint                              | Access  | Description                      |
-| ------ | ------------------------------------- | ------- | -------------------------------- |
-| GET    | `/api/bookings`                       | Auth    | Get user's bookings              |
-| POST   | `/api/bookings`                       | Student | Create a booking                 |
-| PATCH  | `/api/bookings/:id/status`            | Tutor   | Complete or cancel a booking     |
-| POST   | `/api/bookings/initiate-payment/:id`  | Student | Create Stripe checkout session   |
+| Method | Endpoint                             | Access  | Description                    |
+| ------ | ------------------------------------ | ------- | ------------------------------ |
+| GET    | `/api/bookings`                      | Auth    | Get user's bookings            |
+| POST   | `/api/bookings`                      | Student | Create a booking               |
+| PATCH  | `/api/bookings/:id/status`           | Tutor   | Complete or cancel a booking   |
+| POST   | `/api/bookings/initiate-payment/:id` | Student | Create Stripe checkout session |
 
 ### 💳 Payments
 
-| Method | Endpoint                  | Access  | Description                     |
-| ------ | ------------------------- | ------- | ------------------------------- |
-| POST   | `/api/payments/webhook`   | Stripe  | Handle Stripe webhook events    |
+| Method | Endpoint                | Access | Description                  |
+| ------ | ----------------------- | ------ | ---------------------------- |
+| POST   | `/api/payments/webhook` | Stripe | Handle Stripe webhook events |
 
 ### ⭐ Reviews
 
-| Method | Endpoint            | Access  | Description              |
-| ------ | ------------------- | ------- | ------------------------ |
-| GET    | `/api/reviews`      | Public  | Get all reviews          |
-| POST   | `/api/reviews`      | Student | Create a review          |
+| Method | Endpoint       | Access  | Description     |
+| ------ | -------------- | ------- | --------------- |
+| GET    | `/api/reviews` | Public  | Get all reviews |
+| POST   | `/api/reviews` | Student | Create a review |
 
 ### 📂 Categories
 
-| Method | Endpoint             | Access  | Description              |
-| ------ | -------------------- | ------- | ------------------------ |
-| GET    | `/api/categories`    | Public  | List all categories      |
-| POST   | `/api/categories`    | Admin   | Create a category        |
+| Method | Endpoint          | Access | Description         |
+| ------ | ----------------- | ------ | ------------------- |
+| GET    | `/api/categories` | Public | List all categories |
+| POST   | `/api/categories` | Admin  | Create a category   |
 
 ### 🛡️ Admin
 
-| Method | Endpoint                  | Access | Description              |
-| ------ | ------------------------- | ------ | ------------------------ |
-| GET    | `/api/admin/users`        | Admin  | Get all platform users   |
-| PATCH  | `/api/admin/users/:id`    | Admin  | Update user (ban, role)  |
+| Method | Endpoint               | Access | Description             |
+| ------ | ---------------------- | ------ | ----------------------- |
+| GET    | `/api/admin/users`     | Admin  | Get all platform users  |
+| PATCH  | `/api/admin/users/:id` | Admin  | Update user (ban, role) |
 
 ---
 
@@ -177,6 +177,11 @@ APP_URL=http://localhost:3000
 # Stripe
 STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
 STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
+
+# Admin Credentials
+ADMIN_NAME='SkillBridge Admin 1'
+ADMIN_EMAIL=admin1@skillbridge.com
+ADMIN_PASS=admin1234
 ```
 
 ### 3. Database Setup
@@ -207,15 +212,15 @@ The server will start at `http://localhost:5000`.
 
 ## 🧪 Useful Commands
 
-| Command                              | Description                                |
-| ------------------------------------ | ------------------------------------------ |
-| `npm run dev`                        | Start development server with hot reload   |
-| `npm run build`                      | Build for Vercel deployment                |
-| `npm run seed:admin`                 | Seed the admin user                        |
-| `npx prisma generate`               | Regenerate Prisma client types             |
-| `npx prisma migrate dev`            | Apply schema migrations                    |
-| `npx prisma studio`                 | Open Prisma Studio GUI                     |
-| `npx @better-auth/cli generate`     | Regenerate Better Auth user models         |
+| Command                         | Description                              |
+| ------------------------------- | ---------------------------------------- |
+| `npm run dev`                   | Start development server with hot reload |
+| `npm run build`                 | Build for Vercel deployment              |
+| `npm run seed:admin`            | Seed the admin user                      |
+| `npx prisma generate`           | Regenerate Prisma client types           |
+| `npx prisma migrate dev`        | Apply schema migrations                  |
+| `npx prisma studio`             | Open Prisma Studio GUI                   |
+| `npx @better-auth/cli generate` | Regenerate Better Auth user models       |
 
 ---
 
