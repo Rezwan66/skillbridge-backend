@@ -13,6 +13,7 @@ import { userRouter } from './modules/users/user.route';
 import { PaymentController } from './modules/payments/payment.controller';
 
 const app: Application = express();
+app.set('trust proxy', 1);
 
 // Configure CORS to allow both production and Vercel preview deployments
 const allowedOrigins = [
