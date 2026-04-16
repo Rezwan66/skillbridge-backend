@@ -168,10 +168,11 @@ PORT=5000
 
 # Better Auth
 BETTER_AUTH_SECRET=your-secret-key
+# ⚠️ IMPORTANT FOR PROD: This MUST strictly equal your Frontend Domain (because the Frontend Edge Proxy rewrites requests, so Better Auth expects the host to match the origin proxy)
 BETTER_AUTH_URL=http://localhost:5000
 BACKEND_URL=http://localhost:5000
 
-# Frontend URL (CORS)
+# Frontend URL (CORS / Proxy Origin)
 APP_URL=http://localhost:3000
 
 # Stripe
