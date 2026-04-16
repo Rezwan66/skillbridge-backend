@@ -673,7 +673,8 @@ var getTutorById = async (id) => {
       tutorCategories: {
         include: { category: { select: { name: true } } }
       },
-      availabilities: true
+      availabilities: true,
+      user: true
     }
   });
   if (!tutor) {

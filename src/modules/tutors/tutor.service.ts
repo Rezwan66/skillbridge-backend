@@ -263,6 +263,7 @@ const getTutorById = async (id: string) => {
         include: { category: { select: { name: true } } },
       },
       availabilities: true,
+      user: true,
     },
   });
 
